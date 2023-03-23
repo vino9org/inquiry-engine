@@ -1,5 +1,0 @@
-
-dgs:
-  graphql:
-    introspection:
-      enabled: true

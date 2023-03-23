@@ -1,8 +1,18 @@
 type Query {
-    shows(titleFilter: String): [Show]
+    getCasaAccountDetail(accountId: String, trxStartDat: String, trxEndDate: String): [CasaAccount]
 }
 
-type Show {
-    title: String
-    releaseYear: Int
+type CasaTransaction {
+    refId: String!
+    amount: String!
+    currency: String!
+    valueDate: String!
+    memo: String!
+}
+
+type CasaAccount {
+    accountId: String!
+    currency: String!
+    balance: String!
+    transactions: [CasaTransaction]
 }
