@@ -13,7 +13,7 @@ The project is still in POC stage. Contributions welcome!
 ## Get Started
 
 Checkout the [GraphQL Schema](src/main/resources/schema/schema.graphqls). Run the project by ```./mvnw clean spring-boot:run```, then use your favorite GraphQL client and send
-the following query
+the following query to ```http://localhost:8080/graphql```
 
 ```text
 {
