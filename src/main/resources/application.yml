@@ -1,8 +1,5 @@
-spring:
-  data:
-    mongodb:
-      url: mongodb://localhost:27017
-      database: vinobank
+de.flapdoodle.mongodb.embedded:
+  version: "6.0.5"
 
 dgs:
   graphql:

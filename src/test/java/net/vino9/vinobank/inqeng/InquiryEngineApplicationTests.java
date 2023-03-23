@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -21,9 +21,8 @@ class InquiryEngineApplicationTests {
     void test_get_account_details_single_without_transactions() {
         List<String> accounts = dgsQueryExecutor.executeAndExtractJsonPath(
                 " { getCasaAccountDetail(accountId:\"123\") { accountId } }",
-                "data.getCasaAccountDetail");
+                "data.getCasaAccountDetail[*].accountId");
 
-        // empty database, nothing should be returned
-        assertTrue(accounts.isEmpty());
+        assertThat(accounts).contains("123");
     }
 }

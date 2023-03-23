@@ -1,10 +1,12 @@
 package net.vino9.vinobank.inqeng.model;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "casa_transactions")
 @Data
+@Builder
 public class CasaTransaction {
     private String id;
     private String schemaVer;

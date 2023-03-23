@@ -1,11 +1,13 @@
 package net.vino9.vinobank.inqeng.model;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "casa_accounts")
 @Data
+@Builder
 public class CasaAccount {
     @Id
     private String id;
