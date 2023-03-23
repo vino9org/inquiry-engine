@@ -5,6 +5,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "casa_accounts")
 @Data
 @Builder
@@ -15,5 +17,5 @@ public class CasaAccount {
     private String accountId;
     private String currency;
     private String balance;
-    private CasaTransaction[] transactions;
+    private List<CasaTransaction> transactions;
 }

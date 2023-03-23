@@ -1,8 +1,11 @@
 type Query {
-    getCasaAccountDetail(accountId: String, trxStartDat: String, trxEndDate: String): [CasaAccount]
+    getCasaAccountDetail(accountId: String!): CasaAccount
+    getTransactionsForCasaAccount(accountId: String!): [CasaTransaction]
+    getCasaAccountDetailWithTransactions(accountId: String!): CasaAccount
 }
 
 type CasaTransaction {
+    accountId: String!
     refId: String!
     amount: String!
     currency: String!
