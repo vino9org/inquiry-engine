@@ -1,11 +1,11 @@
 type Query {
-    getCasaAccountDetail(accountId: String!): CasaAccount
-    getTransactionsForCasaAccount(accountId: String!): [CasaTransaction]
-    getCasaAccountDetailWithTransactions(accountId: String!): CasaAccount
+    CasaAccount(accountId: String!): CasaAccount
+    CasaAccountsByCustomer(customerId: String!): [CasaAccount]
 }
 
 type CasaTransaction {
     accountId: String!
+    customerId: String!
     refId: String!
     amount: String!
     currency: String!

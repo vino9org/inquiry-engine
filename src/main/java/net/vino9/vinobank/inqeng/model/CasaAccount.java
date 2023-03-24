@@ -15,6 +15,7 @@ public class CasaAccount {
     private String id;
     private String schemaVer;
     private String accountId;
+    private String customerId;
     private String currency;
     private String balance;
     private List<CasaTransaction> transactions;

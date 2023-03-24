@@ -21,10 +21,11 @@ public class SeedDataLoader {
     }
 
     @PostConstruct
-    public void seed() throws Exception {
+    public void seed() {
         mongoTemplate.insert(CasaAccount.builder()
                 .schemaVer("1")
                 .accountId("123")
+                .customerId("111")
                 .currency("SGD")
                 .balance("1000.00")
                 .build(), "casa_accounts");
@@ -34,7 +35,27 @@ public class SeedDataLoader {
                 .accountId("123")
                 .refId("10000001")
                 .amount("100.00")
+                .currency("SGD")
                 .memo("transfer 1")
+                .valueDate("2023-05-01")
+                .build(), "casa_transactions");
+
+        mongoTemplate.insert(CasaAccount.builder()
+                .schemaVer("1")
+                .accountId("124")
+                .customerId("111")
+                .currency("USD")
+                .balance("888.88")
+                .build(), "casa_accounts");
+
+        mongoTemplate.insert(CasaTransaction.builder()
+                .schemaVer("1")
+                .accountId("124")
+                .refId("10000002")
+                .amount("12.00")
+                .currency("USD")
+                .memo("transfer 1")
+                .valueDate("2023-04-01")
                 .build(), "casa_transactions");
 
         log.info("seed data loaded");

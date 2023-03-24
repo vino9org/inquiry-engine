@@ -12,13 +12,20 @@ The project is still in POC stage. Contributions welcome!
 
 ## Get Started
 
-Checkout the [GraphQL Schema](src/main/resources/schema/schema.graphqls). Run the project by ```./mvnw clean spring-boot:run```, then use your favorite GraphQL client and send
-the following query to ```http://localhost:8080/graphql```
+Checkout the [GraphQL Schema](src/main/resources/schema/schema.graphqls). Run the project
+by ```./mvnw clean spring-boot:run```, then use your favorite GraphQL client and send the following query
+to ```http://localhost:8080/graphql```
 
 ```text
 {
-    getCasaAccountDetail(accountId:"123") {
-        accountId
+    CasaAccountsByCustomer(customerId: "111") {
+            accountId
+            currency
+            transactions { 
+                refId
+                amount
+                valueDate 
+            }
     }
 }
 ```
@@ -27,13 +34,30 @@ You should get the following response
 
 ```json
 {
-  "data": {
-    "getCasaAccountDetail": [
-      {
-        "accountId": "123"
-      }
-    ]
-  }
-}
-
-```
+    "data": {
+        "CasaAccountsByCustomer": [
+            {
+                "accountId": "123",
+                "currency": "SGD",
+                "transactions": [
+                    {
+                        "refId": "10000001",
+                        "amount": "100.00",
+                        "valueDate": "2023-05-01"
+                    }
+                ]
+            },
+            {
+                "accountId": "124",
+                "currency": "USD",
+                "transactions": [
+                    {
+                        "refId": "10000002",
+                        "amount": "12.00",
+                        "valueDate": "2023-04-01"
+                    }
+                ]
+            }
+        ]
+    }
+}```
