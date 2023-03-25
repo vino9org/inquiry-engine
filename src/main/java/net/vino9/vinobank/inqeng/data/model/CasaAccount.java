@@ -1,4 +1,4 @@
-package net.vino9.vinobank.inqeng.model;
+package net.vino9.vinobank.inqeng.data.model;
 
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +17,6 @@ public class CasaAccount {
     private String accountId;
     private String customerId;
     private String currency;
-    private String balance;
+    private double balance;
     private List<CasaTransaction> transactions;
 }

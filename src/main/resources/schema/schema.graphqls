@@ -3,19 +3,22 @@ type Query {
     CasaAccountsByCustomer(customerId: String!): [CasaAccount]
 }
 
-type CasaTransaction {
+type CasaTransaction @connection {
     accountId: String!
     customerId: String!
     refId: String!
-    amount: String!
+    amount: BigDecimal!
     currency: String!
-    valueDate: String!
+    valueDate: Date!
     memo: String!
 }
 
 type CasaAccount {
     accountId: String!
     currency: String!
-    balance: String!
-    transactions: [CasaTransaction]
+    balance: BigDecimal!
+    transactions: CasaTransactionConnection
 }
+
+scalar Date
+scalar BigDecimal
