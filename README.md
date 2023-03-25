@@ -18,13 +18,20 @@ to ```http://localhost:8080/graphql```
 
 ```text
 {
-    CasaAccountsByCustomer(customerId: "111") {
+    CasaAccount(accountId: "123") {
             accountId
+            balance
             currency
-            transactions { 
-                refId
-                amount
-                valueDate 
+            transactions {
+                edges {
+                    node {
+                        refId
+                    }
+                }
+                pageInfo {
+                    hasPreviousPage
+                    hasNextPage
+                }
             }
     }
 }
@@ -35,29 +42,24 @@ You should get the following response
 ```json
 {
     "data": {
-        "CasaAccountsByCustomer": [
-            {
-                "accountId": "123",
-                "currency": "SGD",
-                "transactions": [
+        "CasaAccount": {
+            "accountId": "123",
+            "balance": 1000.0,
+            "currency": "SGD",
+            "transactions": {
+                "edges": [
                     {
-                        "refId": "10000001",
-                        "amount": "100.00",
-                        "valueDate": "2023-05-01"
+                        "node": {
+                            "refId": "10000001"
+                        }
                     }
-                ]
-            },
-            {
-                "accountId": "124",
-                "currency": "USD",
-                "transactions": [
-                    {
-                        "refId": "10000002",
-                        "amount": "12.00",
-                        "valueDate": "2023-04-01"
-                    }
-                ]
+                ],
+                "pageInfo": {
+                    "hasPreviousPage": false,
+                    "hasNextPage": false
+                }
             }
-        ]
+        }
     }
+}
 }```
