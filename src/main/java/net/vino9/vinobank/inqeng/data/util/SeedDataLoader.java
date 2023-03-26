@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.stream.IntStream;
 
 
 @Component
@@ -32,15 +33,18 @@ public class SeedDataLoader {
                 .balance(1000.00)
                 .build(), "casa_accounts");
 
-        mongoTemplate.insert(CasaTransaction.builder()
-                .schemaVer("1")
-                .accountId("123")
-                .refId("10000001")
-                .amount(100.00)
-                .currency("SGD")
-                .memo("transfer 1")
-                .valueDate(LocalDate.parse("2023-05-01"))
-                .build(), "casa_transactions");
+        IntStream.range(1, 29).forEachOrdered(seq -> {
+            var dateStr = String.format("%02d", seq);
+            mongoTemplate.insert(CasaTransaction.builder()
+                    .schemaVer("1")
+                    .accountId("123")
+                    .refId("100000" + dateStr)
+                    .amount(100.00 + seq)
+                    .currency("SGD")
+                    .memo("transfer " + seq)
+                    .valueDate(LocalDate.parse("2023-05-" + dateStr))
+                    .build(), "casa_transactions");
+        });
 
         mongoTemplate.insert(CasaAccount.builder()
                 .schemaVer("1")

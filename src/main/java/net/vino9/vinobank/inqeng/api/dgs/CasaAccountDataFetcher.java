@@ -1,8 +1,8 @@
 package net.vino9.vinobank.inqeng.api.dgs;
 
 import com.netflix.graphql.dgs.*;
+import com.netflix.graphql.dgs.exceptions.DgsEntityNotFoundException;
 import graphql.relay.Connection;
-import graphql.relay.SimpleListConnection;
 import lombok.extern.slf4j.Slf4j;
 import net.vino9.vinobank.inqeng.api.types.CasaAccount;
 import net.vino9.vinobank.inqeng.api.types.CasaTransaction;
@@ -11,12 +11,15 @@ import net.vino9.vinobank.inqeng.data.repository.CasaTransactionRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
 @DgsComponent
 @Slf4j
 public class CasaAccountDataFetcher {
+
+    public static final int DEFAULT_PAGE_SIZE = 100;
 
     final CasaAccountRepository casaAccountRepository;
     final CasaTransactionRepository casaTransactionRepository;
@@ -34,27 +37,42 @@ public class CasaAccountDataFetcher {
         log.info("query getCasaAccountDetail: {}", accountId);
         var account = casaAccountRepository.findByAccountId(accountId);
         if (account == null) {
-            return null;
+            throw new DgsEntityNotFoundException();
         }
         return mapper.map(account, CasaAccount.class);
     }
 
     @DgsData(parentType = "CasaAccount", field = "transactions")
-    public Connection<CasaTransaction> getTransactionsForAccount(DgsDataFetchingEnvironment dfe) {
+    public Connection<CasaTransaction> getTransactionsForAccount(
+            DgsDataFetchingEnvironment dfe,
+            @InputArgument int first,
+            @InputArgument String after) {
         var accountId = ((CasaAccount) dfe.getSource()).getAccountId();
         log.info("query getTransactionsForCasaAccount for account {}", accountId);
-        var transactions = casaTransactionRepository.findTransactionsByAccountId(accountId);
-        List<CasaTransaction> output = mapper.map(transactions, new TypeToken<List<CasaTransaction>>() {
-        }.getType());
-        return new SimpleListConnection<CasaTransaction>(output).get(dfe);
+
+        var startingPage = 0;
+        if (after != null) {
+            try {
+                startingPage = Integer.valueOf(after);
+            } catch (NumberFormatException e) {
+                // do nothing, just start from 0
+            }
+        }
+
+        var paging = PageRequest.of(startingPage, first);
+        var page = casaTransactionRepository.findTransactionsByAccountId(accountId, paging);
+        var type = new TypeToken<List<CasaTransaction>>() {
+        }.getType();
+        List<CasaTransaction> output = mapper.map(page.getContent(), type);
+        return ConnectionAssembler.convert(output, page.getNumber(), page.getTotalPages());
     }
 
     @DgsQuery(field = "CasaAccountsByCustomer")
     public List<CasaAccount> getCasaAccountsByCustomer(@InputArgument String customerId) {
         log.info("query getCasaAccountsByCustomer: {}", customerId);
         var accounts = casaAccountRepository.findByCustomerId(customerId);
-        return mapper.map(accounts, new TypeToken<List<CasaAccount>>() {}.getType());
+        var type = new TypeToken<List<CasaAccount>>() {
+        }.getType();
+        return mapper.map(accounts, type);
     }
-
-
 }
