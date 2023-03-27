@@ -19,8 +19,6 @@ import java.util.List;
 @Slf4j
 public class CasaAccountDataFetcher {
 
-    public static final int DEFAULT_PAGE_SIZE = 100;
-
     final CasaAccountRepository casaAccountRepository;
     final CasaTransactionRepository casaTransactionRepository;
     private final ModelMapper mapper = new ModelMapper();

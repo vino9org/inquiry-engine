@@ -29,6 +29,7 @@ class InquiryEngineApplicationTests {
                             "    }\n" +
                             "}\n";
 
+        // first page
         var result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, queryFields(10)));
 
         String accountId = result.read("data.CasaAccount.accountId");
@@ -41,6 +42,7 @@ class InquiryEngineApplicationTests {
         assertThat((boolean) pageInfo.get("hasPreviousPage")).isFalse();
         assertThat((boolean) pageInfo.get("hasNextPage")).isTrue();
 
+        // second page, has full page of data, 10 elements
         var afterPage = (String) pageInfo.get("endCursor");
         result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, queryFields(10, afterPage)));
 
@@ -51,6 +53,7 @@ class InquiryEngineApplicationTests {
         assertThat((boolean) pageInfo.get("hasPreviousPage")).isTrue();
         assertThat((boolean) pageInfo.get("hasNextPage")).isTrue();
 
+        // last page, only has 8 elements
         afterPage = (String) pageInfo.get("endCursor");
         result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, queryFields(10, afterPage)));
 
@@ -61,7 +64,6 @@ class InquiryEngineApplicationTests {
         assertThat((boolean) pageInfo.get("hasPreviousPage")).isTrue();
         assertThat((boolean) pageInfo.get("hasNextPage")).isFalse();
         assertThat((String) pageInfo.get("endCursor")).isEqualTo(afterPage);
-
     }
 
     @Test
@@ -74,7 +76,6 @@ class InquiryEngineApplicationTests {
                 }
                 """, "123", queryFields(10));
 
-        // page 1
         var result = dgsQueryExecutor.executeAndGetDocumentContext(query);
 
         String accountId = result.read("data.CasaAccount.accountId");
@@ -106,15 +107,16 @@ class InquiryEngineApplicationTests {
 
     @Test
     void test_non_existent_account() {
-        var query = String.format(" { CasaAccount(accountId:\"%s\") { accountId transactions { edges { node { refId } } } } }", "bad_bad");
-        assertThrows(QueryException.class, () -> {
+        var query = " { CasaAccount(accountId:\"bad_number\") { accountId } }";
+        var thrown = assertThrows(QueryException.class, () -> {
             dgsQueryExecutor.executeAndGetDocumentContext(query);
         });
+        assertThat(thrown.getErrors().get(0).getMessage()).contains("Requested entity not found");
     }
 
     @Test
     void test_non_existent_customer() {
-        var query = String.format(" { CasaAccountsByCustomer(customerId: \"%s\") { accountId currency transactions { edges { node { refId } } } } }", "007");
+        var query = " { CasaAccountsByCustomer(customerId: \"007\") { accountId } }";
         List<String> result = dgsQueryExecutor.executeAndExtractJsonPath(query, "data.CasaAccountsByCustomer[*].accountId");
         assertThat(result).isEmpty();
     }
