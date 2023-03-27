@@ -4,10 +4,10 @@ import com.netflix.graphql.dgs.*;
 import com.netflix.graphql.dgs.exceptions.DgsEntityNotFoundException;
 import graphql.relay.Connection;
 import lombok.extern.slf4j.Slf4j;
-import net.vino9.vinobank.inqeng.api.types.CasaAccount;
-import net.vino9.vinobank.inqeng.api.types.CasaTransaction;
 import net.vino9.vinobank.inqeng.data.repository.CasaAccountRepository;
 import net.vino9.vinobank.inqeng.data.repository.CasaTransactionRepository;
+import net.vino9.vinobank.inqeng.geneated.types.CasaAccount;
+import net.vino9.vinobank.inqeng.geneated.types.CasaTransaction;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class CasaAccountDataFetcher {
         var startingPage = 0;
         if (after != null) {
             try {
-                startingPage = Integer.valueOf(after);
+                startingPage = Integer.valueOf(after).intValue();
             } catch (NumberFormatException e) {
                 // do nothing, just start from 0
             }

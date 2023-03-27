@@ -17,7 +17,7 @@ type CasaAccount {
     accountId: String!
     currency: String!
     balance: BigDecimal!
-    transactions(first: Int, after: String="0"): CasaTransactionConnection
+    transactions(first: Int=10, after: String="0"): CasaTransactionConnection
 }
 
 scalar Date

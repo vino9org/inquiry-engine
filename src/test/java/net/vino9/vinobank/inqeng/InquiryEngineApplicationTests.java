@@ -18,19 +18,40 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ActiveProfiles("test")
 class InquiryEngineApplicationTests {
 
+    public static final String QUERY_FIELDS = """
+                        accountId
+                        balance
+                        currency
+                        transactions {
+                            edges {
+                                node {
+                                    refId
+                                    amount
+                                }
+                            }
+                            pageInfo {
+                                startCursor
+                                endCursor
+                                hasPreviousPage
+                                hasNextPage
+                            }
+                        }
+            """;
     @Autowired
     DgsQueryExecutor dgsQueryExecutor;
 
     @Test
     void test_get_account_details_with_pagination() {
-        var queryTemplate = "{\n" +
-                            "    CasaAccount(accountId: \"123\") {\n" +
-                            "    %s\n" +
-                            "    }\n" +
-                            "}\n";
+        var queryTemplate = """ 
+                    {
+                        CasaAccount(accountId: "123") {
+                        %s
+                        }
+                    }
+                """;
 
         // first page
-        var result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, queryFields(10)));
+        var result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, QUERY_FIELDS));
 
         String accountId = result.read("data.CasaAccount.accountId");
         assertThat(accountId).isEqualTo("123");
@@ -44,7 +65,7 @@ class InquiryEngineApplicationTests {
 
         // second page, has full page of data, 10 elements
         var afterPage = (String) pageInfo.get("endCursor");
-        result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, queryFields(10, afterPage)));
+        result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, fieldsForPage(10, 1)));
 
         refIds = result.read("data.CasaAccount.transactions.edges[*].node.refId");
         assertThat(refIds).hasSize(10);
@@ -55,7 +76,7 @@ class InquiryEngineApplicationTests {
 
         // last page, only has 8 elements
         afterPage = (String) pageInfo.get("endCursor");
-        result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, queryFields(10, afterPage)));
+        result = dgsQueryExecutor.executeAndGetDocumentContext(String.format(queryTemplate, fieldsForPage(10, 2)));
 
         refIds = result.read("data.CasaAccount.transactions.edges[*].node.refId");
         assertThat(refIds).hasSize(8);
@@ -74,7 +95,7 @@ class InquiryEngineApplicationTests {
                     %s
                     }
                 }
-                """, "123", queryFields(10));
+                """, "123", QUERY_FIELDS);
 
         var result = dgsQueryExecutor.executeAndGetDocumentContext(query);
 
@@ -85,7 +106,6 @@ class InquiryEngineApplicationTests {
         assertThat(refIds).contains("10000001");
     }
 
-
     @Test
     void test_get_accounts_by_customer_id() {
         var query = String.format("""
@@ -94,7 +114,7 @@ class InquiryEngineApplicationTests {
                     %s
                     }
                 }
-                """, "111", queryFields(10));
+                """, "111", QUERY_FIELDS);
 
         var result = dgsQueryExecutor.executeAndGetDocumentContext(query);
 
@@ -121,32 +141,8 @@ class InquiryEngineApplicationTests {
         assertThat(result).isEmpty();
     }
 
-    private String queryFields(int first, String after) {
-        var fields = queryFields(first);
-        var source = String.format("(first: %d)", first);
-        var target = String.format("(first: %d, after: \"%s\")", first, after);
-        return fields.replace(source, target);
-    }
-
-    private String queryFields(int first) {
-        return String.format("""
-                            accountId
-                            balance
-                            currency
-                            transactions(first: %d) {
-                                edges {
-                                    node {
-                                        refId
-                                        amount
-                                    }
-                                }
-                                pageInfo {
-                                    startCursor
-                                    endCursor
-                                    hasPreviousPage
-                                    hasNextPage
-                                }
-                            }
-                """, first);
+    private String fieldsForPage(int pageSize, int pageNumber) {
+        var target = String.format("transactions (first: %d, after: \"%d\") {", pageSize, pageNumber);
+        return QUERY_FIELDS.replace("transactions {", target);
     }
 }
