@@ -21,14 +21,14 @@ public class CasaAccountDataFetcher {
 
     final CasaAccountRepository casaAccountRepository;
     final CasaTransactionRepository casaTransactionRepository;
-    private final ModelMapper mapper = new ModelMapper();
+    final ModelMapper mapper;
 
     @Autowired
-    public CasaAccountDataFetcher(CasaAccountRepository casaAccountRepository, CasaTransactionRepository casaTransactionRepository) {
+    public CasaAccountDataFetcher(CasaAccountRepository casaAccountRepository, CasaTransactionRepository casaTransactionRepository, ModelMapper mapper) {
         this.casaAccountRepository = casaAccountRepository;
         this.casaTransactionRepository = casaTransactionRepository;
+        this.mapper = mapper;
     }
-
 
     @DgsQuery(field = "CasaAccount")
     public CasaAccount getCasaAccountDetail(@InputArgument String accountId) {
@@ -43,7 +43,7 @@ public class CasaAccountDataFetcher {
     @DgsData(parentType = "CasaAccount", field = "transactions")
     public Connection<CasaTransaction> getTransactionsForAccount(
             DgsDataFetchingEnvironment dfe,
-            @InputArgument int first,
+            @InputArgument Integer first,
             @InputArgument String after) {
         var accountId = ((CasaAccount) dfe.getSource()).getAccountId();
         log.info("query getTransactionsForCasaAccount for account {}", accountId);
@@ -51,7 +51,7 @@ public class CasaAccountDataFetcher {
         var startingPage = 0;
         if (after != null) {
             try {
-                startingPage = Integer.valueOf(after).intValue();
+                startingPage = Integer.parseInt(after);
             } catch (NumberFormatException e) {
                 // do nothing, just start from 0
             }
@@ -59,10 +59,7 @@ public class CasaAccountDataFetcher {
 
         var paging = PageRequest.of(startingPage, first);
         var page = casaTransactionRepository.findTransactionsByAccountId(accountId, paging);
-        var type = new TypeToken<List<CasaTransaction>>() {
-        }.getType();
-        List<CasaTransaction> output = mapper.map(page.getContent(), type);
-        return ConnectionAssembler.convert(output, page.getNumber(), page.getTotalPages());
+        return ConnectionAssembler.fromPageable(page, mapper);
     }
 
     @DgsQuery(field = "CasaAccountsByCustomer")
