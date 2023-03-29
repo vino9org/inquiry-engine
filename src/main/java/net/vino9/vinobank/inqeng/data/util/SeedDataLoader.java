@@ -31,6 +31,7 @@ public class SeedDataLoader {
                 .customerId("111")
                 .currency("SGD")
                 .balance(1000.00)
+                .flags("internal flag1")
                 .build(), "casa_accounts");
 
         IntStream.range(1, 29).forEachOrdered(seq -> {
@@ -52,6 +53,7 @@ public class SeedDataLoader {
                 .customerId("111")
                 .currency("USD")
                 .balance(888.88)
+                .flags("internal flag2")
                 .build(), "casa_accounts");
 
         mongoTemplate.insert(CasaTransaction.builder()

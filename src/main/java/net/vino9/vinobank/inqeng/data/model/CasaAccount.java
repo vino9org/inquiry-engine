@@ -19,4 +19,5 @@ public class CasaAccount {
     private String currency;
     private double balance;
     private List<CasaTransaction> transactions;
+    private String flags;
 }
