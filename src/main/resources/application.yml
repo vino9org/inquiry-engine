@@ -5,6 +5,8 @@ dgs:
   graphql:
     introspection:
       enabled: true
+    graphiql:
+      enabled: true
     extensions:
       scalars:
         time-dates.enabled: true
