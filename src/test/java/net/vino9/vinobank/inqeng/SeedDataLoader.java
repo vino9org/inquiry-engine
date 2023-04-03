@@ -1,4 +1,4 @@
-package net.vino9.vinobank.inqeng.data.util;
+package net.vino9.vinobank.inqeng;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.java.Log;

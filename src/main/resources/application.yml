@@ -1,5 +1,7 @@
-de.flapdoodle.mongodb.embedded:
-  version: "6.0.5"
+spring:
+  data:
+    mongodb:
+      uri: "mongodb://apiuser:password@127.0.0.1/test"
 
 dgs:
   graphql:
@@ -11,3 +13,6 @@ dgs:
       scalars:
         time-dates.enabled: true
         numbers.enabled: true
+
+de.flapdoodle.mongodb.embedded:
+  version: "6.0.5"
